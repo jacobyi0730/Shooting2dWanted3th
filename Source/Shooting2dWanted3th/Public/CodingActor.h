@@ -25,4 +25,16 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=AAAA)
 	int32 Number = 10;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	int32 MyAdd(int32 a, int32 b);
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	int32 MyAddForBlueprint(int32 a, int32 b);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	int32 MyAddNativeEvent(int32 a, int32 b);
+
+	UPROPERTY()
+	class UInputAction* IA_aa;
 };
