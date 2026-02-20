@@ -16,8 +16,17 @@ void ACodingActor::BeginPlay()
 	Super::BeginPlay();
 
 	FString log =  TEXT("Hello World 영훈!");
+	int32 num = 100;
+	float pi = 3.14f;
+	bool isGood = true;
 
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *log);
+	UE_LOG(LogTemp, Warning, TEXT("%s, %s, %d, %.2f, %d"),
+		TEXT("문자열출력!"),
+		*log,
+		num,
+		pi, 
+		isGood
+	);
 	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, log);
 
 }

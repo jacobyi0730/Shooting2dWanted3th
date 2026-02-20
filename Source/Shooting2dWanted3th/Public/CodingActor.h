@@ -34,7 +34,4 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	int32 MyAddNativeEvent(int32 a, int32 b);
-
-	UPROPERTY()
-	class UInputAction* IA_aa;
 };
