@@ -6,7 +6,9 @@
 #include "GameFramework/Pawn.h"
 #include "PlayerPawn.generated.h"
 
+// 전방선언
 class UStaticMeshComponent;
+struct FInputActionValue;
 
 UCLASS()
 class SHOOTING2DWANTED3TH_API APlayerPawn : public APawn
@@ -35,6 +37,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UInputAction* IA_Move;
 
+	void OnMyMove(const FInputActionValue& value);
+
+	FVector Direction;
+	float Speed = 500.f;
 	
 public:
 	// 루트컴포넌트를 만들고 싶다.
