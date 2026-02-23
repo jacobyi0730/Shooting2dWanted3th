@@ -37,18 +37,31 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UInputAction* IA_Move;
 
-	void OnMyMove(const FInputActionValue& value);
+	UPROPERTY(EditAnywhere)
+	class UInputAction* IA_Fire;
 
+	void OnMyMove(const FInputActionValue& value);
+	void OnMyFirePressed(const FInputActionValue& value);
+	void OnMyFireReleased(const FInputActionValue& value);
+
+	
 	FVector Direction;
 	float Speed = 500.f;
 	
 public:
 	// 루트컴포넌트를 만들고 싶다.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class USceneComponent* RootComp;
+	class UBoxComponent* BoxComp;
 	
 	// 외형을 만들고 싶다.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UStaticMeshComponent* MeshComp;
 
+	// 총구 위치를 만들고 싶다.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class USceneComponent* FirePoint;
+
+	// 총알 공장을 만들고 싶다.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class ABulletActor> BulletFactory;
 };

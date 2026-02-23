@@ -2,9 +2,13 @@
 
 
 #include "PlayerPawn.h"
+
+#include "BulletActor.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
+#include "Components/BoxComponent.h"
+
 
 // Sets default values
 APlayerPawn::APlayerPawn()
@@ -12,12 +16,12 @@ APlayerPawn::APlayerPawn()
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	//루트를 만들어서 루트 컴포넌트로 하고싶다.
-	RootComp = CreateDefaultSubobject<USceneComponent>(TEXT("RootComp"));
-	SetRootComponent(RootComp);
+	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
+	SetRootComponent(BoxComp);
 	// 외형을 만들어서 루트컴포넌트에 붙이고싶다.
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetupAttachment(RootComponent);
-
+	
 	// 외형파일을 로드해서 MeshComp에 반영하고싶다.
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(
 		TEXT("/Script/Engine.StaticMesh'/Engine/BasicShapes/Cube.Cube'"));
@@ -34,6 +38,11 @@ APlayerPawn::APlayerPawn()
 	{
 		MeshComp->SetMaterial(0, tempMat.Object);
 	}
+
+	// 총구위치 컴포넌트를 생성해서 루트에 붙이고싶다.
+	FirePoint = CreateDefaultSubobject<USceneComponent>(TEXT("FirePoint"));
+	FirePoint->SetupAttachment(RootComponent);
+	
 }
 
 // Called when the game starts or when spawned
@@ -80,6 +89,9 @@ void APlayerPawn::SetupPlayerInputComponent(
 	if (input)
 	{
 		input->BindAction(IA_Move, ETriggerEvent::Triggered, this, &APlayerPawn::OnMyMove);
+		
+		input->BindAction(IA_Fire, ETriggerEvent::Started, this, &APlayerPawn::OnMyFirePressed);
+		input->BindAction(IA_Fire, ETriggerEvent::Completed, this, &APlayerPawn::OnMyFireReleased);
 	}
 }
 
@@ -88,4 +100,17 @@ void APlayerPawn::OnMyMove(const FInputActionValue& value)
 	FVector2d v = value.Get<FVector2d>();
 	Direction.Z = v.X;
 	Direction.Y = v.Y;
+}
+
+void APlayerPawn::OnMyFirePressed(const FInputActionValue& value)
+{
+	UE_LOG(LogTemp, Warning, TEXT("%hs"), __FUNCTION__)
+
+	// 총알공장에서 총알을 생성해서 FirePoint에 배치하고싶다.
+	FTransform t = FirePoint->GetComponentTransform();
+	GetWorld()->SpawnActor<ABulletActor>(BulletFactory, t);
+}
+
+void APlayerPawn::OnMyFireReleased(const FInputActionValue& value)
+{
 }

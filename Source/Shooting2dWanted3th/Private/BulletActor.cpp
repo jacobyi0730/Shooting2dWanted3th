@@ -1,0 +1,57 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "BulletActor.h"
+
+#include "Components/BoxComponent.h"
+
+// Sets default values
+ABulletActor::ABulletActor()
+{
+ 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
+
+	//루트를 만들어서 루트 컴포넌트로 하고싶다.
+	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
+	SetRootComponent(BoxComp);
+	// 외형을 만들어서 루트컴포넌트에 붙이고싶다.
+	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
+	MeshComp->SetupAttachment(RootComponent);
+	
+	// 외형파일을 로드해서 MeshComp에 반영하고싶다.
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(
+		TEXT("/Script/Engine.StaticMesh'/Engine/BasicShapes/Cube.Cube'"));
+
+	if (tempMesh.Succeeded())
+	{
+		MeshComp->SetStaticMesh(tempMesh.Object);
+	}
+
+	ConstructorHelpers::FObjectFinder<UMaterial> tempMat(
+		TEXT(
+			"/Script/Engine.Material'/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial'"));
+	if (tempMat.Succeeded())
+	{
+		MeshComp->SetMaterial(0, tempMat.Object);
+	}
+}
+
+// Called when the game starts or when spawned
+void ABulletActor::BeginPlay()
+{
+	Super::BeginPlay();
+	
+}
+
+// Called every frame
+void ABulletActor::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	// 앞으로 이동하고 싶다.
+	// P = P0 + vt
+	FVector P0 = GetActorLocation();
+	FVector vt = GetActorForwardVector() * Speed * DeltaTime;
+	SetActorLocation(P0 + vt);
+
+}
+
