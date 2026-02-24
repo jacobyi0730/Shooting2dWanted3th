@@ -27,13 +27,17 @@ ABulletActor::ABulletActor()
 		MeshComp->SetStaticMesh(tempMesh.Object);
 	}
 
-	ConstructorHelpers::FObjectFinder<UMaterial> tempMat(
-		TEXT(
-			"/Script/Engine.Material'/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial'"));
+	ConstructorHelpers::FObjectFinder<UMaterial> tempMat(TEXT("/Script/Engine.Material'/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial'"));
 	if (tempMat.Succeeded())
 	{
 		MeshComp->SetMaterial(0, tempMat.Object);
 	}
+
+	// BoxComp를 충돌설정을 하고싶다.
+	BoxComp->SetGenerateOverlapEvents(true);
+	BoxComp->SetCollisionProfileName(TEXT("Bullet"));
+
+	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 // Called when the game starts or when spawned
@@ -55,3 +59,10 @@ void ABulletActor::Tick(float DeltaTime)
 
 }
 
+void ABulletActor::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	Super::NotifyActorBeginOverlap(OtherActor);
+	// 너죽고 나죽자.
+	OtherActor->Destroy();
+	this->Destroy();
+}

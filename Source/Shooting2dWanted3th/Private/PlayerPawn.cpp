@@ -42,7 +42,18 @@ APlayerPawn::APlayerPawn()
 	// 총구위치 컴포넌트를 생성해서 루트에 붙이고싶다.
 	FirePoint = CreateDefaultSubobject<USceneComponent>(TEXT("FirePoint"));
 	FirePoint->SetupAttachment(RootComponent);
-	
+
+
+	// BoxComp를 충돌설정을 하고싶다.
+	BoxComp->SetGenerateOverlapEvents(true);
+	BoxComp->SetCollisionProfileName(TEXT("Player"));
+	// BoxComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	// BoxComp->SetCollisionObjectType(ECC_GameTraceChannel1);
+	// BoxComp->SetCollisionResponseToAllChannels(ECR_Ignore);
+	// BoxComp->SetCollisionResponseToChannel(
+	// 	ECC_GameTraceChannel2,
+	// 	ECR_Overlap
+	// );
 }
 
 // Called when the game starts or when spawned

@@ -23,6 +23,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+
 	// 루트를 박스컴포넌트로 하고싶다.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<class UBoxComponent>  BoxComp;
@@ -35,3 +37,4 @@ public:
 	float Speed = 1000.f;
 
 };
+

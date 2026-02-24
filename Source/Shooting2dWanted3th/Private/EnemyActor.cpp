@@ -3,7 +3,10 @@
 
 #include "EnemyActor.h"
 
+#include "PlayerPawn.h"
 #include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 AEnemyActor::AEnemyActor()
@@ -34,19 +37,47 @@ AEnemyActor::AEnemyActor()
 	{
 		MeshComp->SetMaterial(0, tempMat.Object);
 	}
+	
+	// BoxComp를 충돌설정을 하고싶다.
+	BoxComp->SetGenerateOverlapEvents(true);
+	BoxComp->SetCollisionProfileName(TEXT("Enemy"));
+
 }
 
-// Called when the game starts or when spawned
+// 태어날 때 방향을 정하고
 void AEnemyActor::BeginPlay()
 {
 	Super::BeginPlay();
+	// auto* target = UGameplayStatics::GetActorOfClass(
+	// 	GetWorld(),
+	// 	APlayerPawn::StaticClass()
+	// );
+	// 6. 나머지 확률로는 그냥 앞으로 하고싶다.
+	Direction = GetActorForwardVector();
+	
+	int randValue = FMath::RandRange(0, 9);
+	// 1. 30% 확률을 만들고싶다. 만약 30%라면
+	if (randValue < 3)
+	{
+		// 3. 주인공을 찾고
+		APawn* target = GetWorld()->GetFirstPlayerController()->GetPawn();
+		// 4. 주인공을 향하는 방향 구해서
+		// 5. Direction에 대입하고싶다.
+		Direction = target->GetActorLocation() - this->GetActorLocation();
+		Direction.Normalize();
+		// Direction 방향으로 회전하고싶다.
+		FRotator rot = UKismetMathLibrary::MakeRotFromXZ(Direction, GetActorUpVector());
+
+		SetActorRotation(rot);
+	}
+
 	
 }
-
-// Called every frame
+// 살아가면서 그 방향으로 이동하고싶다.
 void AEnemyActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	// P = P0 + vt
+	SetActorLocation(GetActorLocation() + Direction.GetSafeNormal() * Speed * DeltaTime);
 }
 

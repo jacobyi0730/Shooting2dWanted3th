@@ -32,4 +32,6 @@ public:
 	// 속력을 만들고싶다.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Speed = 500.f;
+
+	FVector Direction;
 };
