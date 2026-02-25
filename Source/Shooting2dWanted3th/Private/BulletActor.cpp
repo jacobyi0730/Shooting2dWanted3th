@@ -3,6 +3,7 @@
 
 #include "BulletActor.h"
 
+#include "EnemyActor.h"
 #include "Components/BoxComponent.h"
 
 // Sets default values
@@ -14,6 +15,7 @@ ABulletActor::ABulletActor()
 	//루트를 만들어서 루트 컴포넌트로 하고싶다.
 	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
 	SetRootComponent(BoxComp);
+	BoxComp->SetBoxExtent(FVector(50));
 	// 외형을 만들어서 루트컴포넌트에 붙이고싶다.
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetupAttachment(RootComponent);
@@ -38,12 +40,16 @@ ABulletActor::ABulletActor()
 	BoxComp->SetCollisionProfileName(TEXT("Bullet"));
 
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 }
 
 // Called when the game starts or when spawned
 void ABulletActor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// BoxComp에게 충돌하면 알려달라고 하고싶다.
+	BoxComp->OnComponentBeginOverlap.AddDynamic(this, &ABulletActor::OnMyCompBeginOverlab);
 	
 }
 
@@ -62,7 +68,32 @@ void ABulletActor::Tick(float DeltaTime)
 void ABulletActor::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
-	// 너죽고 나죽자.
-	OtherActor->Destroy();
+	// // 너죽고 나죽자.
+	// OtherActor->Destroy();
+	// this->Destroy();
+}
+
+void ABulletActor::OnMyCompBeginOverlab(
+	UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+	const FHitResult& SweepResult)
+{
+	// 만약 OtherActor가 Enemy라면
+	if (Cast<AEnemyActor>(OtherActor)) //if (OtherActor->IsA<AEnemyActor>())
+	{
+		// 너죽고
+		OtherActor->Destroy();
+	}
+	// if (OtherActor->Tags.Contains(TEXT("Enemy")))
+	// {
+	// 	
+	// }
+	// if (OtherActor->GetActorNameOrLabel().Contains(TEXT("Enemy")))
+	// {
+	// 	
+	// }
+	
+	
+	// 나죽자.
 	this->Destroy();
 }

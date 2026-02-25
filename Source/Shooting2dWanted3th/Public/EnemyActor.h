@@ -23,6 +23,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION()
+	void OnMyCompBeginOverlab(UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult);
+
 	// 충돌체를 루트로 하고싶다.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<class UBoxComponent> BoxComp;

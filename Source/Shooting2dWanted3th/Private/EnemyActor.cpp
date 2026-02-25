@@ -17,6 +17,7 @@ AEnemyActor::AEnemyActor()
 	//루트를 만들어서 루트 컴포넌트로 하고싶다.
 	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
 	SetRootComponent(BoxComp);
+	BoxComp->SetBoxExtent(FVector(50));
 	// 외형을 만들어서 루트컴포넌트에 붙이고싶다.
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetupAttachment(RootComponent);
@@ -48,6 +49,10 @@ AEnemyActor::AEnemyActor()
 void AEnemyActor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// BoxComp에게 충돌하면 알려달라 하고싶다.
+	BoxComp->OnComponentBeginOverlap.AddDynamic(this,&AEnemyActor::OnMyCompBeginOverlab);
+	
 	// auto* target = UGameplayStatics::GetActorOfClass(
 	// 	GetWorld(),
 	// 	APlayerPawn::StaticClass()
@@ -79,5 +84,19 @@ void AEnemyActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	// P = P0 + vt
 	SetActorLocation(GetActorLocation() + Direction.GetSafeNormal() * Speed * DeltaTime);
+}
+
+void AEnemyActor::OnMyCompBeginOverlab(UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+	bool bFromSweep, const FHitResult& SweepResult)
+{
+	// 너(플레이어)죽고
+	if (Cast<APlayerPawn>(OtherActor))
+	{
+		OtherActor->Destroy();
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+	}
+	// 나(Enemy)죽자
+	this->Destroy();
 }
 

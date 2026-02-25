@@ -18,6 +18,7 @@ APlayerPawn::APlayerPawn()
 	//루트를 만들어서 루트 컴포넌트로 하고싶다.
 	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
 	SetRootComponent(BoxComp);
+	BoxComp->SetBoxExtent(FVector(50));
 	// 외형을 만들어서 루트컴포넌트에 붙이고싶다.
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetupAttachment(RootComponent);
