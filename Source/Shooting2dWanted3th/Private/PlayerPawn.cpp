@@ -62,6 +62,8 @@ void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
+	FireType = EFireType::Timer;
+
 	// PlayerController를 가져오고싶다.
 	auto* pc = GetWorld()->GetFirstPlayerController();
 	// IMC_Player를 반영하고 싶다.
@@ -87,6 +89,21 @@ void APlayerPawn::Tick(float DeltaTime)
 	SetActorLocation(P0 + velocity * DeltaTime);
 
 	Direction = FVector::Zero();
+
+	// 만약 총쏘기가 On이라면
+	if (EFireType::Tick == FireType && bAutoFire)
+	{
+		//	시간이 흐르다가
+		CurTime += DeltaTime;
+		//	현재시간이 총쏘기 시간을 초과하면
+		if (CurTime> FireTime)
+		{
+			//	총알을 생성하고싶다.
+			MakeBullet();
+			//	현재시간을 0으로 초기화 하고싶다.
+			CurTime = 0;
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -116,13 +133,24 @@ void APlayerPawn::OnMyMove(const FInputActionValue& value)
 
 void APlayerPawn::OnMyFirePressed(const FInputActionValue& value)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%hs"), __FUNCTION__)
+	// 총쏘기 On
+	bAutoFire = true;
+	CurTime = 0;
+	MakeBullet();
 
-	// 총알공장에서 총알을 생성해서 FirePoint에 배치하고싶다.
-	FTransform t = FirePoint->GetComponentTransform();
-	GetWorld()->SpawnActor<ABulletActor>(BulletFactory, t);
+	GetWorld()->GetTimerManager().SetTimer(FireHandle, this, &APlayerPawn::MakeBullet, 0.5f, true);
 }
 
 void APlayerPawn::OnMyFireReleased(const FInputActionValue& value)
 {
+	// 총쏘기 Off
+	bAutoFire = false;
+	GetWorld()->GetTimerManager().ClearTimer(FireHandle);
+}
+
+void APlayerPawn::MakeBullet()
+{
+	// 총알공장에서 총알을 생성해서 FirePoint에 배치하고싶다.
+	FTransform t = FirePoint->GetComponentTransform();
+	GetWorld()->SpawnActor<ABulletActor>(BulletFactory, t);
 }

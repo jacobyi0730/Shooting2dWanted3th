@@ -6,6 +6,12 @@
 #include "GameFramework/Pawn.h"
 #include "PlayerPawn.generated.h"
 
+enum class EFireType
+{
+	Tick,
+	Timer,
+};
+
 // 전방선언
 class UStaticMeshComponent;
 struct FInputActionValue;
@@ -43,6 +49,22 @@ public:
 	void OnMyMove(const FInputActionValue& value);
 	void OnMyFirePressed(const FInputActionValue& value);
 	void OnMyFireReleased(const FInputActionValue& value);
+
+	// 자동으로 총을 쏘는 기능을 만들고 싶다.
+	// 마우스 왼쪽 버튼을 누르고 있으면 [0.5초]마다 총알이 발사되게 하고싶다.
+	// 마우스 왼쪽 버튼을 떼면 총알이 그만 나가게 하고싶다.
+	// [온오프버튼], [주기]
+	bool bAutoFire;
+	float CurTime;
+	float FireTime = 0.5f;
+	// 총알생성기능
+	void MakeBullet();
+
+	EFireType FireType = EFireType::Tick;
+	FTimerHandle FireHandle;
+
+	
+	
 
 	
 	FVector Direction;

@@ -4,6 +4,7 @@
 #include "BulletActor.h"
 
 #include "EnemyActor.h"
+#include "ShootingGameMode.h"
 #include "Components/BoxComponent.h"
 
 // Sets default values
@@ -83,6 +84,10 @@ void ABulletActor::OnMyCompBeginOverlab(
 	{
 		// 너죽고
 		OtherActor->Destroy();
+		// 게임모드를 가져와서
+		auto* gm = Cast<AShootingGameMode>(GetWorld()->GetAuthGameMode());
+		// 게임모드에게 점수를 1점 증가시켜달라고 요청하고싶다.
+		gm->AddScore(1);
 	}
 	// if (OtherActor->Tags.Contains(TEXT("Enemy")))
 	// {
