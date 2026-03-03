@@ -8,6 +8,7 @@
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
 #include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
@@ -153,4 +154,11 @@ void APlayerPawn::MakeBullet()
 	// 총알공장에서 총알을 생성해서 FirePoint에 배치하고싶다.
 	FTransform t = FirePoint->GetComponentTransform();
 	GetWorld()->SpawnActor<ABulletActor>(BulletFactory, t);
+
+	// 총알 발사음을 내고싶다.
+	check(FireSound);
+	if (FireSound)
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), FireSound);
+	}
 }

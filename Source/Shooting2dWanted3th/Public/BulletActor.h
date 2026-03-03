@@ -44,5 +44,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Speed = 1000.f;
 
+	// 적과 충돌할 때 폭발음과 VFX를 재생하고싶다.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<class USoundBase> ExplosionSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<class UNiagaraSystem> ExplosionVFX;
+
 };
 

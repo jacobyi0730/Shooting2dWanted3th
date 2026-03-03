@@ -86,4 +86,8 @@ public:
 	// 총알 공장을 만들고 싶다.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class ABulletActor> BulletFactory;
+
+	// 총알을 발사할 때 소리(SFX)를 내고싶다.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<class USoundBase> FireSound;
 };

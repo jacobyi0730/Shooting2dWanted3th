@@ -25,7 +25,6 @@ void AEnemyManagerActor::BeginPlay()
 	Super::BeginPlay();
 	
 	GetWorld()->GetTimerManager().SetTimer(handle, this, &AEnemyManagerActor::MakeEnemy, 2, true);
-	
 }
 
 void AEnemyManagerActor::EndPlay(const EEndPlayReason::Type EndPlayReason)

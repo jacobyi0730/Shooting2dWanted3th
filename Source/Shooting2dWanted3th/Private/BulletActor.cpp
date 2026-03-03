@@ -6,6 +6,8 @@
 #include "EnemyActor.h"
 #include "ShootingGameMode.h"
 #include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
 
 // Sets default values
 ABulletActor::ABulletActor()
@@ -88,6 +90,18 @@ void ABulletActor::OnMyCompBeginOverlab(
 		auto* gm = Cast<AShootingGameMode>(GetWorld()->GetAuthGameMode());
 		// 게임모드에게 점수를 1점 증가시켜달라고 요청하고싶다.
 		gm->AddScore(1);
+
+		// 적과 부딪히면 폭발음을 재생하고싶다.
+		check(ExplosionSound);
+		if (ExplosionSound)
+		{
+			UGameplayStatics::PlaySound2D(GetWorld(), ExplosionSound);
+		}
+		check(ExplosionVFX)
+		if (ExplosionVFX)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionVFX, OtherActor->GetActorLocation());
+		}
 	}
 	// if (OtherActor->Tags.Contains(TEXT("Enemy")))
 	// {
