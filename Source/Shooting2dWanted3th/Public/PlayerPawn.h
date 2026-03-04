@@ -90,4 +90,16 @@ public:
 	// 총알을 발사할 때 소리(SFX)를 내고싶다.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<class USoundBase> FireSound;
+
+	// [체력]을 만들고 싶다.
+	int32 CurHP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 MaxHP = 10;
+
+	UPROPERTY()
+	TObjectPtr<class UPlayerHPUI> PlayerHPUI;
+	void DamageProcess(int32 damage = 1);
+
+	UPROPERTY()
+	TObjectPtr<class UMainUI> MainUI;
 };

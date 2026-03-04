@@ -19,13 +19,13 @@ public:
 	virtual void BeginPlay() override;
 	
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class UUserWidget> ScoreUIFactory; 
+	TSubclassOf<class UMainUI> MainUIFactory; 
 	UPROPERTY()
-	class UScoreUI* ScoreUI; 
+	class UMainUI* MainUI; 
 	
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Score;
 
-	void AddScore(int value);
+	void AddScore(int32 value);
 };

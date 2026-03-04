@@ -91,10 +91,9 @@ void AEnemyActor::OnMyCompBeginOverlab(UPrimitiveComponent* OverlappedComponent,
 	bool bFromSweep, const FHitResult& SweepResult)
 {
 	// 너(플레이어)죽고
-	if (Cast<APlayerPawn>(OtherActor))
+	if (auto* player = Cast<APlayerPawn>(OtherActor))
 	{
-		OtherActor->Destroy();
-		UGameplayStatics::SetGamePaused(GetWorld(), true);
+		player->DamageProcess(1);
 	}
 	// 나(Enemy)죽자
 	this->Destroy();

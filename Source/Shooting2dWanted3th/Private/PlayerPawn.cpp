@@ -6,7 +6,11 @@
 #include "BulletActor.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "GameOverUI.h"
 #include "InputActionValue.h"
+#include "MainUI.h"
+#include "PlayerHPUI.h"
+#include "ShootingGameMode.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -62,6 +66,15 @@ APlayerPawn::APlayerPawn()
 void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// 체력UI의 포인터를 기억하고싶다.
+	auto* gm = Cast<AShootingGameMode>(GetWorld()->GetAuthGameMode());
+	MainUI = gm->MainUI;
+	PlayerHPUI = MainUI->WBP_Player_HP;
+
+	// 주인공의 체력을 최대로 하고싶다.
+	CurHP = MaxHP;
+	PlayerHPUI->SetHP(CurHP, MaxHP);
 
 	FireType = EFireType::Timer;
 
@@ -160,5 +173,21 @@ void APlayerPawn::MakeBullet()
 	if (FireSound)
 	{
 		UGameplayStatics::PlaySound2D(GetWorld(), FireSound);
+	}
+}
+
+void APlayerPawn::DamageProcess(int32 damage)
+{
+	// 체력을 1 소모하고싶다.
+	CurHP -= damage;
+	PlayerHPUI->SetHP(CurHP, MaxHP);
+	// 만약 체력이 0 이하라면
+	if (CurHP <= 0)
+	{
+		// 주인공이 파괴되고 게임오버 UI를 표시하고싶다.
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+		Destroy();
+		// GameOverUI를 보이게하고싶다.
+		MainUI->WBP_Game_Over->SetVisibility(ESlateVisibility::Visible);
 	}
 }
