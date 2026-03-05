@@ -80,6 +80,12 @@ void APlayerPawn::BeginPlay()
 
 	// PlayerController를 가져오고싶다.
 	auto* pc = GetWorld()->GetFirstPlayerController();
+
+	// 태어날 때 일시정지를 풀고 InputMode 는 Game, 커서는 안보이게 하고싶다.
+	pc->SetPause(false);
+	pc->SetInputMode(FInputModeGameOnly());
+	pc->SetShowMouseCursor(false);
+
 	// IMC_Player를 반영하고 싶다.
 	UEnhancedInputLocalPlayerSubsystem* subsys = ULocalPlayer::GetSubsystem<
 		UEnhancedInputLocalPlayerSubsystem>(pc->GetLocalPlayer());
@@ -184,10 +190,15 @@ void APlayerPawn::DamageProcess(int32 damage)
 	// 만약 체력이 0 이하라면
 	if (CurHP <= 0)
 	{
-		// 주인공이 파괴되고 게임오버 UI를 표시하고싶다.
-		UGameplayStatics::SetGamePaused(GetWorld(), true);
 		Destroy();
 		// GameOverUI를 보이게하고싶다.
 		MainUI->WBP_Game_Over->SetVisibility(ESlateVisibility::Visible);
+
+		// 주인공이 파괴되고 게임오버 UI를 표시하고싶다.
+		//UGameplayStatics::SetGamePaused(GetWorld(), true);
+		auto* pc = GetWorld()->GetFirstPlayerController();
+		pc->SetPause(true);
+		pc->SetInputMode(FInputModeUIOnly());
+		pc->SetShowMouseCursor(true);
 	}
 }
