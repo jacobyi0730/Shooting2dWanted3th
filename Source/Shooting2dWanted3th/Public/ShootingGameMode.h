@@ -27,5 +27,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Score;
 
+	__declspec(property(get=GetScore, put=SetScore)) int32 SCORE;
+
+	int32 GetScore();
+	void SetScore(int32 value);
+	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 HighScore;
+
+	FString SlotName = TEXT("HighScore");
+
 	void AddScore(int32 value);
+
+	void MyLoadGame();
+	void MySaveGame();
 };

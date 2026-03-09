@@ -19,5 +19,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	class UTextBlock* TextScore;
 
-	void SetScore(int newScore);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	class UTextBlock* TextHighScore;
+
+	void SetScore(int32 newScore);
+	void SetHighScore(int32 newHighScore);
 };

@@ -82,25 +82,28 @@ void ABulletActor::OnMyCompBeginOverlab(
 	const FHitResult& SweepResult)
 {
 	// 만약 OtherActor가 Enemy라면
-	if (Cast<AEnemyActor>(OtherActor)) //if (OtherActor->IsA<AEnemyActor>())
+	if (auto* enemy = Cast<AEnemyActor>(OtherActor))
 	{
 		// 너죽고
-		OtherActor->Destroy();
+		bool bDestroyed = enemy->DamageProcess(1);
 		// 게임모드를 가져와서
 		auto* gm = Cast<AShootingGameMode>(GetWorld()->GetAuthGameMode());
 		// 게임모드에게 점수를 1점 증가시켜달라고 요청하고싶다.
 		gm->AddScore(1);
 
-		// 적과 부딪히면 폭발음을 재생하고싶다.
-		check(ExplosionSound);
-		if (ExplosionSound)
+		if (bDestroyed)
 		{
-			UGameplayStatics::PlaySound2D(GetWorld(), ExplosionSound);
-		}
-		check(ExplosionVFX)
-		if (ExplosionVFX)
-		{
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionVFX, OtherActor->GetActorLocation());
+			// 적과 부딪히면 폭발음을 재생하고싶다.
+			check(ExplosionSound);
+			if (ExplosionSound)
+			{
+				UGameplayStatics::PlaySound2D(GetWorld(), ExplosionSound);
+			}
+			check(ExplosionVFX)
+			if (ExplosionVFX)
+			{
+				UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionVFX, OtherActor->GetActorLocation());
+			}
 		}
 	}
 	// if (OtherActor->Tags.Contains(TEXT("Enemy")))

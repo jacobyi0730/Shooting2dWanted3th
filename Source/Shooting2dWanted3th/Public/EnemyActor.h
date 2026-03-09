@@ -42,4 +42,18 @@ public:
 	float Speed = 500.f;
 
 	FVector Direction;
+
+	// 위젯컴포넌트를 루트에 붙이고싶다. 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<class UWidgetComponent> HPComp;
+
+	// 체력을 관리하고싶다.
+	int32 CurHP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 MaxHP = 2;
+
+	UPROPERTY()
+	class UEnemyHPUI* HPUI; 
+
+	bool DamageProcess(int32 damage);
 };

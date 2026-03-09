@@ -3,8 +3,10 @@
 
 #include "EnemyActor.h"
 
+#include "EnemyHPUI.h"
 #include "PlayerPawn.h"
 #include "Components/BoxComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -43,6 +45,14 @@ AEnemyActor::AEnemyActor()
 	BoxComp->SetGenerateOverlapEvents(true);
 	BoxComp->SetCollisionProfileName(TEXT("Enemy"));
 
+
+	HPComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPComp"));
+	HPComp->SetupAttachment(RootComponent);
+	HPComp->SetWorldLocationAndRotation(
+		FVector(-100, 0, 0),
+		FRotator(90, 0, 0)
+	);
+	HPComp->SetDrawSize(FVector2D(150, 30));
 }
 
 // 태어날 때 방향을 정하고
@@ -76,6 +86,15 @@ void AEnemyActor::BeginPlay()
 		SetActorRotation(rot);
 	}
 
+
+	CurHP = MaxHP;
+
+	HPUI = CastChecked<UEnemyHPUI>(HPComp->GetWidget());
+	if (HPUI)
+	{
+		HPUI->SetHP(CurHP, MaxHP);
+	}
+
 	
 }
 // 살아가면서 그 방향으로 이동하고싶다.
@@ -94,8 +113,20 @@ void AEnemyActor::OnMyCompBeginOverlab(UPrimitiveComponent* OverlappedComponent,
 	if (auto* player = Cast<APlayerPawn>(OtherActor))
 	{
 		player->DamageProcess(1);
+		// 나(Enemy)죽자
+		this->Destroy();
 	}
-	// 나(Enemy)죽자
-	this->Destroy();
+}
+
+bool AEnemyActor::DamageProcess(int32 damage)
+{
+	CurHP -= damage;
+	HPUI->SetHP(CurHP, MaxHP);
+	if (CurHP <= 0)
+	{
+		this->Destroy();
+		return true;
+	}
+	return false;
 }
 

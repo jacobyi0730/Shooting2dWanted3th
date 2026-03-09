@@ -5,10 +5,15 @@
 
 #include "Components/TextBlock.h"
 
-void UScoreUI::SetScore(int newScore)
+void UScoreUI::SetScore(int32 newScore)
 {
 	TextScore->SetText(FText::AsNumber(newScore));
 
 	//FString s = FString(TEXT("%d"), newScore);
 	//TextScore->SetText(FText::FromString(s));
+}
+
+void UScoreUI::SetHighScore(int32 newHighScore)
+{
+	TextHighScore->SetText(FText::AsNumber(newHighScore));
 }
