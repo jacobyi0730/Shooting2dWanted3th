@@ -8,6 +8,7 @@
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
+#include "PlayerPawn.h"
 
 // Sets default values
 ABulletActor::ABulletActor()
@@ -114,8 +115,32 @@ void ABulletActor::OnMyCompBeginOverlab(
 	// {
 	// 	
 	// }
-	
-	
-	// 나죽자.
-	this->Destroy();
+
+	// 비활성화 한 후
+	SetActive(false);
+	// 탄창으로 복귀하고싶다.
+	auto* player = Cast<APlayerPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	if (false == player->Magazine.Contains(this))
+	{
+		// 탄창에 총알을 넣고싶다.
+		player->Magazine.Add(this);
+	}
+}
+
+void ABulletActor::SetActive(bool bValue)
+{
+	// 만약 bValue가 참이면 보이게/충돌가능, 틱이 호출되게
+	if (bValue)
+	{
+		MeshComp->SetVisibility(true);
+		BoxComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		SetActorTickEnabled(true);
+	}
+	// 그렇지 않으면 안보이게/안충돌, 틱이 호출되지 않게
+	else
+	{
+		MeshComp->SetVisibility(false);
+		BoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		SetActorTickEnabled(false);
+	}
 }

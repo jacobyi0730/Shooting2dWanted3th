@@ -27,7 +27,7 @@ APlayerPawn::APlayerPawn()
 	// 외형을 만들어서 루트컴포넌트에 붙이고싶다.
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetupAttachment(RootComponent);
-	
+
 	// 외형파일을 로드해서 MeshComp에 반영하고싶다.
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(
 		TEXT("/Script/Engine.StaticMesh'/Engine/BasicShapes/Cube.Cube'"));
@@ -94,9 +94,20 @@ void APlayerPawn::BeginPlay()
 	{
 		subsys->AddMappingContext(IMC_Player, 0);
 	}
+
+	Magazine.Empty(MaxBulletCount);
+	// 탄창에 총알을 넣어놓고싶다.
+	for (int32 i = 0; i < MaxBulletCount; i++)
+	{
+		// 총알을 생성해서 비활성화 한 후 탄창에 넣고싶다.
+		FTransform t = FirePoint->GetComponentTransform();
+		auto* bullet = GetWorld()->SpawnActor<ABulletActor>(BulletFactory, t);
+		bullet->SetActive(false);
+		Magazine.Add(bullet);
+	}
 }
 
-float k = 0;// 전역변수. 
+float k = 0; // 전역변수. 
 
 // Called every frame
 void APlayerPawn::Tick(float DeltaTime)
@@ -116,7 +127,7 @@ void APlayerPawn::Tick(float DeltaTime)
 		//	시간이 흐르다가
 		CurTime += DeltaTime;
 		//	현재시간이 총쏘기 시간을 초과하면
-		if (CurTime> FireTime)
+		if (CurTime > FireTime)
 		{
 			//	총알을 생성하고싶다.
 			MakeBullet();
@@ -137,10 +148,13 @@ void APlayerPawn::SetupPlayerInputComponent(
 
 	if (input)
 	{
-		input->BindAction(IA_Move, ETriggerEvent::Triggered, this, &APlayerPawn::OnMyMove);
-		
-		input->BindAction(IA_Fire, ETriggerEvent::Started, this, &APlayerPawn::OnMyFirePressed);
-		input->BindAction(IA_Fire, ETriggerEvent::Completed, this, &APlayerPawn::OnMyFireReleased);
+		input->BindAction(IA_Move, ETriggerEvent::Triggered, this,
+		                  &APlayerPawn::OnMyMove);
+
+		input->BindAction(IA_Fire, ETriggerEvent::Started, this,
+		                  &APlayerPawn::OnMyFirePressed);
+		input->BindAction(IA_Fire, ETriggerEvent::Completed, this,
+		                  &APlayerPawn::OnMyFireReleased);
 	}
 }
 
@@ -158,7 +172,9 @@ void APlayerPawn::OnMyFirePressed(const FInputActionValue& value)
 	CurTime = 0;
 	MakeBullet();
 
-	GetWorld()->GetTimerManager().SetTimer(FireHandle, this, &APlayerPawn::MakeBullet, 0.5f, true);
+	GetWorld()->GetTimerManager().SetTimer(FireHandle, this,
+	                                       &APlayerPawn::MakeBullet, 0.5f,
+	                                       true);
 }
 
 void APlayerPawn::OnMyFireReleased(const FInputActionValue& value)
@@ -170,9 +186,18 @@ void APlayerPawn::OnMyFireReleased(const FInputActionValue& value)
 
 void APlayerPawn::MakeBullet()
 {
+	// 만약 탄창에 총알이 없다면 바로 함수를 종료하고싶다.
+	if (Magazine.Num() <= 0)
+	{
+		return;
+	}
+	
 	// 총알공장에서 총알을 생성해서 FirePoint에 배치하고싶다.
+	auto* bullet = Magazine[0];
 	FTransform t = FirePoint->GetComponentTransform();
-	GetWorld()->SpawnActor<ABulletActor>(BulletFactory, t);
+	bullet->SetActorTransform(t);
+	bullet->SetActive(true);
+	Magazine.RemoveAt(0);
 
 	// 총알 발사음을 내고싶다.
 	check(FireSound);

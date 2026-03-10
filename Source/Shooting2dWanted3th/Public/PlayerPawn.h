@@ -102,4 +102,15 @@ public:
 
 	UPROPERTY()
 	TObjectPtr<class UMainUI> MainUI;
+
+	// [탄창]을 만들고 총알을 [20개] 만들어서 미리 넣어놓고싶다.
+	// 총알은 [활성/비활성 기능]을 만들고싶다.
+	// 태어날때 총알을 비활성 하고싶다.
+	// 총알을 만드는 일은 비활성화된 총알 하나를 활성화 하는것이다.
+
+	UPROPERTY()
+	TArray<class ABulletActor*> Magazine;
+
+	UPROPERTY(EditAnywhere)
+	int32 MaxBulletCount = 20;
 };

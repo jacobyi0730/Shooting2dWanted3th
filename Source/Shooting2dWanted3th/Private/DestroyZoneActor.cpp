@@ -3,6 +3,9 @@
 
 #include "DestroyZoneActor.h"
 
+#include "BulletActor.h"
+#include "EnemyActor.h"
+#include "PlayerPawn.h"
 #include "Components/BoxComponent.h"
 
 // Sets default values
@@ -38,7 +41,21 @@ void ADestroyZoneActor::Tick(float DeltaTime)
 void ADestroyZoneActor::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
-	// 안녕히가세요.
-	OtherActor->Destroy();
+	// 만약 적이라면 파괴하고싶다.
+	if (OtherActor->IsA<AEnemyActor>())
+	{
+		OtherActor->Destroy();
+	}
+	else if (auto* bullet = Cast<ABulletActor>(OtherActor))
+	{
+		auto* player = Cast<APlayerPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
+		// 만약 탄창에 없으면
+		if (false == player->Magazine.Contains(bullet))
+		{
+			// 탄창에 총알을 넣고싶다.
+			bullet->SetActive(false);
+			player->Magazine.Add(bullet);
+		}
+	}
 }
 

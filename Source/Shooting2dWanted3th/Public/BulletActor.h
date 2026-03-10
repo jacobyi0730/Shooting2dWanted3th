@@ -51,5 +51,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<class UNiagaraSystem> ExplosionVFX;
 
+	void SetActive(bool bValue);
+
 };
 
